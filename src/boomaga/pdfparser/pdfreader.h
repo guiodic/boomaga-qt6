@@ -1,4 +1,3 @@
-#include <QtCore5Compat/QTextCodec>
 /* BEGIN_COMMON_COPYRIGHT_HEADER
  * (c)LGPL2+
  *
@@ -29,6 +28,7 @@
 #define PDFREADER_H
 
 #include <QtGlobal>
+#include <QtCore5Compat/QTextCodec>
 #include <exception>
 #include "pdfvalue.h"
 #include "pdfxref.h"
