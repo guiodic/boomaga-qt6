@@ -800,7 +800,7 @@ bool Project::writeDocument(const QList<Sheet*> &sheets, const QString &fileName
 {
     QFile f(fileName);
     if (!f.open(QIODevice::WriteOnly))
-        return project->error(tr("I can't write to file '%1'").arg(fileName) + "\n" + f.errorString());
+        return theProject->error(tr("I can't write to file '%1'").arg(fileName) + "\n" + f.errorString());
 
     bool res = writeDocument(sheets, &f);
     f.close();

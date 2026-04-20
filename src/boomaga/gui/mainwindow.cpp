@@ -142,34 +142,34 @@ MainWindow::MainWindow(QWidget *parent):
             this, SLOT(switchLayout()));
 
     connect(ui->doubleSidedCbx, SIGNAL(clicked(bool)),
-            project, SLOT(setDoubleSided(bool)));
+            theProject, SLOT(setDoubleSided(bool)));
 
     connect(ui->jobsView, SIGNAL(pageSelected(int)),
-            project, SLOT(setCurrentPage(int)));
+            theProject, SLOT(setCurrentPage(int)));
 
     connect(ui->subBookletView, SIGNAL(pageSelected(int)),
-            project, SLOT(setCurrentPage(int)));
+            theProject, SLOT(setCurrentPage(int)));
 
     connect(ui->printersCombo, SIGNAL(activated(int)),
             this, SLOT(switchPrinterProfile()));
 
-    connect(project, SIGNAL(changed()),
+    connect(theProject, SIGNAL(changed()),
             this, SLOT(updateWidgets()));
 
-    connect(project, SIGNAL(currentPageChanged(int)),
+    connect(theProject, SIGNAL(currentPageChanged(int)),
             this, SLOT(updateWidgets()));
 
 
-    connect(project, SIGNAL(changed()),
+    connect(theProject, SIGNAL(changed()),
             ui->preview, SLOT(refresh()));
 
-    connect(project, SIGNAL(currentPageChanged(int)),
+    connect(theProject, SIGNAL(currentPageChanged(int)),
             ui->preview, SLOT(refresh()));
 
     connect(ui->printerConfigBtn, SIGNAL(clicked()),
             this, SLOT(showPrinterSettingsDialog()));
 
-    connect(project, SIGNAL(progress(int,int)),
+    connect(theProject, SIGNAL(progress(int,int)),
             this, SLOT(updateProgressBar(int, int)), Qt::QueuedConnection);
 
     connect(ui->preview, SIGNAL(contextMenuRequested(Sheet*,ProjectPage*)),
@@ -187,7 +187,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(ui->menuEditJob, SIGNAL(aboutToShow()),
             this, SLOT(showEditJobMainMenu()));
 
-    connect(project, SIGNAL(longTaskStarted(const ProjectLongTask*)),
+    connect(theProject, SIGNAL(longTaskStarted(const ProjectLongTask*)),
             this , SLOT(longTaskStarted(const ProjectLongTask*)));
 
     ui->preview->setFocusPolicy(Qt::StrongFocus);
@@ -231,7 +231,7 @@ void MainWindow::fillPrintersCombo()
  ************************************************/
 void MainWindow::closeEvent(QCloseEvent*)
 {
-    project->free();
+    theProject->free();
 }
 
 
@@ -261,7 +261,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     foreach(QUrl url, event->mimeData()->urls())
         files << url.toLocalFile();
 
-    project->load(files);
+    theProject->load(files);
 }
 
 
@@ -287,20 +287,20 @@ void MainWindow::loadSettings()
     if (!currentPrinter)
         currentPrinter = Printer::nullPrinter();
 
-    project->setPrinterProfile(currentPrinter, currentPrinter->currentProfileIndex(), false);
+    theProject->setPrinterProfile(currentPrinter, currentPrinter->currentProfileIndex(), false);
 
     QString layoutId = settings->value(Settings::Layout).toString();
 
     foreach(Layout *layout, mAvailableLayouts)
     {
         if (layout->id() == layoutId)
-            project->setLayout(layout);
+            theProject->setLayout(layout);
     }
 
-    if (!project->layout())
-        project->setLayout(mAvailableLayouts.at(0));
+    if (!theProject->layout())
+        theProject->setLayout(mAvailableLayouts.at(0));
 
-    project->setDoubleSided(settings->value(Settings::DoubleSided).toBool());
+    theProject->setDoubleSided(settings->value(Settings::DoubleSided).toBool());
 
     ui->jobsView->setIconSize(settings->value(Settings::MainWindow_PageListIconSize).toInt());
     ui->subBookletView->setIconSize(settings->value(Settings::MainWindow_PageListIconSize).toInt());
@@ -321,12 +321,12 @@ void MainWindow::saveSettings()
     if (printer)
         settings->setValue(Settings::Printer, printer->name());
 
-    settings->setValue(Settings::Layout, project->layout()->id());
-    settings->setValue(Settings::DoubleSided, project->doubleSided());
+    settings->setValue(Settings::Layout, theProject->layout()->id());
+    settings->setValue(Settings::DoubleSided, theProject->doubleSided());
 
 
-    if (project->printer() != Printer::nullPrinter())
-        project->printer()->saveSettings();
+    if (theProject->printer() != Printer::nullPrinter())
+        theProject->printer()->saveSettings();
 
     settings->setValue(Settings::MainWindow_PageListIconSize, ui->jobsView->iconSize());
     settings->setValue(Settings::MainWindow_PageListIconSize, ui->subBookletView->iconSize());
@@ -365,7 +365,7 @@ void MainWindow::initActions()
     else
         act->setIcon(loadIcon("arrow-right"));
     connect(act, SIGNAL(triggered()),
-            project, SLOT(prevSheet()));
+            theProject, SLOT(prevSheet()));
 
     act = ui->actionNextSheet;
     if (qApp->layoutDirection() == Qt::LeftToRight)
@@ -373,7 +373,7 @@ void MainWindow::initActions()
     else
         act->setIcon(loadIcon("arrow-left"));
     connect(act, SIGNAL(triggered()),
-            project, SLOT(nextSheet()));
+            theProject, SLOT(nextSheet()));
 
     act = ui->actionOpen;
     connect(act, SIGNAL(triggered()),
@@ -439,52 +439,52 @@ void MainWindow::updateWidgets()
 {
     foreach (LayoutRadioButton* btn, this->findChildren<LayoutRadioButton*>())
     {
-        btn->setChecked(btn->layout() == project->layout());
+        btn->setChecked(btn->layout() == theProject->layout());
     }
 
-    ui->printersCombo->setCurrentPrinterProfile(project->printer(), project->printer()->currentProfileIndex());
+    ui->printersCombo->setCurrentPrinterProfile(theProject->printer(), theProject->printer()->currentProfileIndex());
 
 
-    ui->actionPrint->setEnabled(project->pageCount() > 0);
+    ui->actionPrint->setEnabled(theProject->pageCount() > 0);
     ui->actionPrintAndClose->setEnabled(ui->actionPrint->isEnabled());
 
-    ui->actionPreviousSheet->setEnabled(project->currentSheetNum() > 0);
-    ui->actionNextSheet->setEnabled(project->currentSheetNum() < project->previewSheetCount() - 1);
+    ui->actionPreviousSheet->setEnabled(theProject->currentSheetNum() > 0);
+    ui->actionNextSheet->setEnabled(theProject->currentSheetNum() < theProject->previewSheetCount() - 1);
 
-    ui->actionSave->setEnabled(project->pageCount() > 0);
+    ui->actionSave->setEnabled(theProject->pageCount() > 0);
     ui->actionSaveAs->setEnabled(ui->actionSave->isEnabled());
     ui->actionExport->setEnabled(ui->actionSave->isEnabled());
 
-    if (project->layout()->id() == "Booklet")
+    if (theProject->layout()->id() == "Booklet")
     {
         ui->doubleSidedCbx->setChecked(true);
         ui->doubleSidedCbx->setEnabled(false);
     }
     else
     {
-        ui->doubleSidedCbx->setChecked(project->doubleSided());
+        ui->doubleSidedCbx->setChecked(theProject->doubleSided());
         ui->doubleSidedCbx->setEnabled(true);
     }
 
     // Update status bar ..........................
-    if (project->pageCount())
+    if (theProject->pageCount())
     {
-        int sheetsCount = project->doubleSided() ?
-                          ceil(project->sheetCount() / 2.0) :
-                          project->sheetCount();
+        int sheetsCount = theProject->doubleSided() ?
+                          ceil(theProject->sheetCount() / 2.0) :
+                          theProject->sheetCount();
 
 
         QString pagesStr;
-        if (project->currentPage())
+        if (theProject->currentPage())
         {
             pagesStr = tr("Page %1 of %2", "Status bar")
-                    .arg(project->currentPageNum() + 1)
-                    .arg(project->pageCount());
+                    .arg(theProject->currentPageNum() + 1)
+                    .arg(theProject->pageCount());
         }
         else
         {
-            pagesStr = ((project->pageCount() > 1) ? tr("%1 pages", "Status bar") : tr("%1 page", "Status bar"))
-                    .arg(project->pageCount());
+            pagesStr = ((theProject->pageCount() > 1) ? tr("%1 pages", "Status bar") : tr("%1 page", "Status bar"))
+                    .arg(theProject->pageCount());
         }
 
         QString sheetsStr = ((sheetsCount > 1) ? tr("%1 sheets", "Status bar") : tr("%1 sheet", "Status bar"))
@@ -492,8 +492,8 @@ void MainWindow::updateWidgets()
 
         mStatusBarSheetsLabel.setText(pagesStr + " ( " + sheetsStr + " )");
         mStatusBarCurrentSheetLabel.setText(tr("Sheet %1 of %2", "Status bar")
-                                .arg(project->currentSheetNum() + 1)
-                                .arg(project->previewSheetCount()));
+                                .arg(theProject->currentSheetNum() + 1)
+                                .arg(theProject->previewSheetCount()));
 
     }
     else
@@ -526,9 +526,9 @@ void MainWindow::showPrinterSettingsDialog()
  ************************************************/
 void MainWindow::applyPrinterSettings()
 {
-    project->printer()->saveSettings();
+    theProject->printer()->saveSettings();
     fillPrintersCombo();
-    project->update();
+    theProject->update();
 }
 
 
@@ -540,7 +540,7 @@ void MainWindow::switchLayout()
     LayoutRadioButton *btn = qobject_cast<LayoutRadioButton*>(sender());
     if (btn)
     {
-        project->setLayout(btn->layout());
+        theProject->setLayout(btn->layout());
     }
 }
 
@@ -550,7 +550,7 @@ void MainWindow::switchLayout()
  ************************************************/
 void MainWindow::switchPrinterProfile()
 {
-    project->setPrinterProfile(ui->printersCombo->currentPrinter(),
+    theProject->setPrinterProfile(ui->printersCombo->currentPrinter(),
                                ui->printersCombo->currentProfile());
 }
 
@@ -601,7 +601,7 @@ bool MainWindow::print(uint count, bool collate)
     };
 
     Keeper keeper;
-    if (!project->sheetCount())
+    if (!theProject->sheetCount())
         return false;
 
     saveAuto();
@@ -609,8 +609,8 @@ bool MainWindow::print(uint count, bool collate)
     bool res = true;
     QMessageBox *infoDialog = 0;
 
-    bool split = project->doubleSided() &&
-                 project->printer()->duplexType() != DuplexAuto;
+    bool split = theProject->doubleSided() &&
+                 theProject->printer()->duplexType() != DuplexAuto;
 
     if (split)
     {
@@ -621,9 +621,9 @@ bool MainWindow::print(uint count, bool collate)
         bool rotate_1 = false;
         bool rotate_2 = false;
 
-        if (project->printer()->duplexType() == DuplexManual)
+        if (theProject->printer()->duplexType() == DuplexManual)
         {
-            if (!project->printer()->reverseOrder())
+            if (!theProject->printer()->reverseOrder())
             {
                 order_1 = Project::ForwardOrder;
                 order_2 = Project::ForwardOrder;
@@ -638,12 +638,12 @@ bool MainWindow::print(uint count, bool collate)
                 pagesType_2 = Project::OddPages;
             }
 
-            rotate_1 = isLandscape(project->rotation());
+            rotate_1 = isLandscape(theProject->rotation());
             rotate_2 = false;
         }
         else
         {
-            if (!project->printer()->reverseOrder())
+            if (!theProject->printer()->reverseOrder())
             {
                 order_1 = Project::ForwardOrder;
                 order_2 = Project::BackOrder;
@@ -658,12 +658,12 @@ bool MainWindow::print(uint count, bool collate)
                 pagesType_2 = Project::OddPages;
             }
 
-            rotate_1 = isPortrate(project->rotation());
+            rotate_1 = isPortrate(theProject->rotation());
             rotate_2 = false;
         }
 
-         keeper.sheets_1 = project->selectSheets(pagesType_1, order_1);
-         keeper.sheets_2 = project->selectSheets(pagesType_2, order_2);
+         keeper.sheets_1 = theProject->selectSheets(pagesType_1, order_1);
+         keeper.sheets_2 = theProject->selectSheets(pagesType_2, order_2);
 
          if (rotate_1)
              rotateSheets(keeper.sheets_1);
@@ -688,11 +688,11 @@ bool MainWindow::print(uint count, bool collate)
 
              if (!keeper.sheets_2.count())
              {
-                 infoDialog = showPrintDialog(tr("Print the all pages on %1.").arg(project->printer()->name()));
+                 infoDialog = showPrintDialog(tr("Print the all pages on %1.").arg(theProject->printer()->name()));
              }
 
 
-             res = project->printer()->print(keeper.sheets_1, "", project->doubleSided(), count, collate);
+             res = theProject->printer()->print(keeper.sheets_1, "", theProject->doubleSided(), count, collate);
              if (!res)
              {
                  delete(infoDialog);
@@ -710,7 +710,7 @@ bool MainWindow::print(uint count, bool collate)
 
              dialog.setText(tr("Print the odd pages on %1.<p>"
                                "When finished, turn the pages, insert them into the printer<br>"
-                               "and click the Continue button.").arg(project->printer()->name()));
+                               "and click the Continue button.").arg(theProject->printer()->name()));
 
              dialog.addButton(QMessageBox::Abort);
              QPushButton *btn = dialog.addButton(QMessageBox::Ok);
@@ -738,9 +738,9 @@ bool MainWindow::print(uint count, bool collate)
                      keeper.sheets_2.append(new Sheet(1, 0));
              }
 
-             infoDialog = showPrintDialog(tr("Print the even pages on %1.").arg(project->printer()->name()));
+             infoDialog = showPrintDialog(tr("Print the even pages on %1.").arg(theProject->printer()->name()));
 
-             res = project->printer()->print(keeper.sheets_2, "", project->doubleSided(), count, collate);
+             res = theProject->printer()->print(keeper.sheets_2, "", theProject->doubleSided(), count, collate);
              if (!res)
              {
                  delete(infoDialog);
@@ -751,17 +751,17 @@ bool MainWindow::print(uint count, bool collate)
     }
     else //if (split) no
     {
-        infoDialog = showPrintDialog(tr("Print the all pages on %1.").arg(project->printer()->name()));
+        infoDialog = showPrintDialog(tr("Print the all pages on %1.").arg(theProject->printer()->name()));
 
         Project::PagesOrder order;
-        if (project->printer()->reverseOrder())
+        if (theProject->printer()->reverseOrder())
             order = Project::BackOrder;
         else
             order = Project::ForwardOrder;
 
-        keeper.sheets_1 = project->selectSheets(Project::AllPages, order);
+        keeper.sheets_1 = theProject->selectSheets(Project::AllPages, order);
 
-        if (project->doubleSided() && keeper.sheets_1.count() % 2)
+        if (theProject->doubleSided() && keeper.sheets_1.count() % 2)
         {
             if (order == Project::BackOrder)
             {
@@ -773,7 +773,7 @@ bool MainWindow::print(uint count, bool collate)
             }
         }
 
-        res = project->printer()->print(keeper.sheets_1, "", project->doubleSided(), count, collate);
+        res = theProject->printer()->print(keeper.sheets_1, "", theProject->doubleSided(), count, collate);
         if (!res)
         {
             delete(infoDialog);
@@ -818,7 +818,7 @@ void MainWindow::printWithOptions()
  ************************************************/
 void MainWindow::showAboutDialog()
 {
-    project->printer()->saveSettings();
+    theProject->printer()->saveSettings();
     AboutDialog dialog(this);
     dialog.exec();
 
@@ -870,7 +870,7 @@ void MainWindow::showJobViewContextMenu(const Job &job)
 void MainWindow::showEditPageMainMenu()
 {
     ui->menuEditPage->clear();
-    fillPageEditMenu(project->currentPage(), ui->menuEditPage);
+    fillPageEditMenu(theProject->currentPage(), ui->menuEditPage);
 }
 
 
@@ -879,13 +879,13 @@ void MainWindow::showEditPageMainMenu()
  ************************************************/
 void MainWindow::showEditJobMainMenu()
 {
-    ProjectPage *page = project->currentPage();
+    ProjectPage *page = theProject->currentPage();
     Job job;
     if (page)
     {
-        int n = project->jobs()->indexOfProjectPage(page);
+        int n = theProject->jobs()->indexOfProjectPage(page);
         if (n >= 0)
-            job = project->jobs()->at(n);
+            job = theProject->jobs()->at(n);
     }
 
     ui->menuEditJob->clear();
@@ -903,14 +903,14 @@ void MainWindow::fillPageEditMenu(ProjectPage *page, QMenu *menu)
     // New subbooklet ................................
     act = new PageAction(tr("Start new booklet from this page"), page, menu);
     connect(act, SIGNAL(triggered()), this, SLOT(startBooklet()));
-    act->setEnabled(page && page != project->page(0));
+    act->setEnabled(page && page != theProject->page(0));
     act->setVisible(page && !page->isManualStartSubBooklet());
     menu->addAction(act);
 
 
     act = new PageAction(tr("Don't start new booklet from this page"), page, menu);
     connect(act, SIGNAL(triggered()), this, SLOT(dontStartBooklet()));
-    act->setEnabled(page && page != project->page(0));
+    act->setEnabled(page && page != theProject->page(0));
     act->setVisible(page && page->isManualStartSubBooklet());
     menu->addAction(act);
     // New subbooklet ................................
@@ -969,9 +969,9 @@ void MainWindow::fillPageEditMenu(ProjectPage *page, QMenu *menu)
     undelMenu->setEnabled(false);
 
 
-    for(int j=0; j<project->jobs()->count(); ++j)
+    for(int j=0; j<theProject->jobs()->count(); ++j)
     {
-        Job job = project->jobs()->at(j);
+        Job job = theProject->jobs()->at(j);
 
         for(int p=0; p<job.pageCount(); ++p)
         {
@@ -1072,7 +1072,7 @@ void MainWindow::deletePage()
     if (!act || !act->page())
         return;
 
-    project->deletePage(act->page());
+    theProject->deletePage(act->page());
 }
 
 
@@ -1085,7 +1085,7 @@ void MainWindow::undoDeletePage()
     if (!act || !act->page())
         return;
 
-    project->undoDeletePage(act->page());
+    theProject->undoDeletePage(act->page());
 }
 
 
@@ -1098,7 +1098,7 @@ void MainWindow::deletePagesEnd()
     if (!act || !act->page())
         return;
 
-    project->deletePagesEnd(act->page());
+    theProject->deletePagesEnd(act->page());
 }
 
 
@@ -1111,7 +1111,7 @@ void MainWindow::insertBlankPageBefore()
     if (!act || !act->page())
         return;
 
-    project->insertBlankPageBefore(act->page());
+    theProject->insertBlankPageBefore(act->page());
 }
 
 
@@ -1124,7 +1124,7 @@ void MainWindow::insertBlankPageAfter()
     if (!act || !act->page())
         return;
 
-    project->insertBlankPageAfter(act->page());
+    theProject->insertBlankPageAfter(act->page());
 }
 
 
@@ -1164,7 +1164,7 @@ void MainWindow::rotateJobLeft()
         ProjectPage *page = job.page(i);
         page->setManualRotation(page->manualRotation() - Rotate90);
     }
-    project->update();
+    theProject->update();
 }
 
 
@@ -1183,7 +1183,7 @@ void MainWindow::rotateJobRight()
         ProjectPage *page = job.page(i);
         page->setManualRotation(page->manualRotation() + Rotate90);
     }
-    project->update();
+    theProject->update();
 }
 
 
@@ -1197,7 +1197,7 @@ void MainWindow::rotatePageLeft()
         return;
 
     act->page()->setManualRotation(act->page()->manualRotation() - Rotate90);
-    project->update();
+    theProject->update();
 }
 
 
@@ -1211,7 +1211,7 @@ void MainWindow::rotatePageRight()
         return;
 
     act->page()->setManualRotation(act->page()->manualRotation() + Rotate90);
-    project->update();
+    theProject->update();
 }
 
 
@@ -1225,11 +1225,11 @@ void MainWindow::startBooklet()
         return;
 
     act->page()->setManualStartSubBooklet(true);
-    project->update();
+    theProject->update();
 
-    int sheetNum = project->previewSheets().indexOfPage(act->page());
+    int sheetNum = theProject->previewSheets().indexOfPage(act->page());
     if (sheetNum > -1)
-        project->setCurrentSheet(sheetNum);
+        theProject->setCurrentSheet(sheetNum);
 }
 
 
@@ -1243,11 +1243,11 @@ void MainWindow::dontStartBooklet()
         return;
 
     act->page()->setManualStartSubBooklet(false);
-    project->update();
+    theProject->update();
 
-    int sheetNum = project->previewSheets().indexOfPage(act->page());
+    int sheetNum = theProject->previewSheets().indexOfPage(act->page());
     if (sheetNum > -1)
-        project->setCurrentSheet(sheetNum);
+        theProject->setCurrentSheet(sheetNum);
 }
 
 
@@ -1288,7 +1288,7 @@ void MainWindow::cloneJob()
         {
             Job job = act->job().clone();
             job.setTitle(QString("%1 [ %2 ]").arg(job.title()).arg(i+1));
-            project->addJob(job);
+            theProject->addJob(job);
         }
     }
 }
@@ -1304,9 +1304,9 @@ void MainWindow::deleteJob()
         return;
 
 
-    int index = project->jobs()->indexOf(act->job());
+    int index = theProject->jobs()->indexOf(act->job());
     if (index > -1)
-        project->removeJob(index);
+        theProject->removeJob(index);
 
     ui->jobsView->updateItems();
     ui->subBookletView->updateItems();
@@ -1348,12 +1348,12 @@ void MainWindow::saveAs(const QString &fileName)
 
     try
     {
-        project->save(file);
+        theProject->save(file);
         ui->statusbar->showMessage(tr("Project saved successfully."), 2000);
     }
     catch (QString &err)
     {
-        project->error(err);
+        theProject->error(err);
     }
 }
 
@@ -1367,7 +1367,7 @@ void MainWindow::exportAs()
 
     ExportToPdf dialog;
     dialog.setOutFileName(fileName);
-    dialog.setMetaInfo(project->metaData());
+    dialog.setMetaInfo(theProject->metaData());
 
     dialog.setModal(true);
     if (!dialog.exec())
@@ -1377,10 +1377,10 @@ void MainWindow::exportAs()
     settings->setValue(Settings::ExportPDF_FileName, fileName);
     fileName = expandHomeDir(fileName);
 
-    project->setMetadata(dialog.metaInfo());
+    theProject->setMetadata(dialog.metaInfo());
 
-    QList<Sheet*> sheets = project->selectSheets(Project::AllPages, Project::ForwardOrder);
-    project->writeDocument(sheets, fileName);
+    QList<Sheet*> sheets = theProject->selectSheets(Project::AllPages, Project::ForwardOrder);
+    theProject->writeDocument(sheets, fileName);
 }
 
 
@@ -1407,7 +1407,7 @@ void MainWindow::load()
     settings->setValue(Settings::SaveDir, dialog.directory().path());
     settings->setValue(Settings::MainWindow_OpenFileFilter, dialog.selectedNameFilter());
 
-    project->load(fileNames);
+    theProject->load(fileNames);
 }
 
 
@@ -1472,11 +1472,11 @@ void MainWindow::saveAuto()
 
     QString file = QString("[%1]-%2.boo")
             .arg(QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm:ss"))
-            .arg(safeFileName(safeFileName(project->jobs()->first().title(true))));
+            .arg(safeFileName(safeFileName(theProject->jobs()->first().title(true))));
 
     file = dir + "/" + file;
     addToRecentFiles(file);
-    project->save(file);
+    theProject->save(file);
 }
 
 
@@ -1491,11 +1491,11 @@ void MainWindow::loadAuto()
 
     try
     {
-        project->load(act->data().toString());
+        theProject->load(act->data().toString());
     }
     catch (QString &err)
     {
-        project->error(err);
+        theProject->error(err);
     }
 }
 

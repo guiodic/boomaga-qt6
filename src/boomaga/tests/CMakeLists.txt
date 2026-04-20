@@ -82,7 +82,8 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-find_package(Qt5 REQUIRED
+find_package(Qt6 REQUIRED
+    Core5Compat
     Core
     Test
     Widgets
@@ -93,4 +94,4 @@ find_package(Qt5 REQUIRED
 
 
 add_executable(${PROJECT_NAME} ${TEST_HEADERS} ${TEST_SOURCES})
-target_link_libraries(${PROJECT_NAME} ${LIBRARIES} Qt5::Core Qt5::Test Qt5::Widgets Qt5::PrintSupport Qt5::DBus)
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES} Qt6::Core Qt6::Core5Compat Qt6::Test Qt6::Widgets Qt6::PrintSupport Qt6::DBus)

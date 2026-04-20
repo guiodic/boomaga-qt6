@@ -37,7 +37,7 @@
 Sheet::Sheet(int count, int sheetNum):
     mSheetNum(sheetNum),
     mHints(0),
-    mRotation(project->rotation())
+    mRotation(theProject->rotation())
 {
     mPages.resize(count);
     for (int i=0; i<count; ++i)
@@ -154,7 +154,7 @@ int SheetList::indexOfPage(const ProjectPage *page, int from) const
  ************************************************/
 int  SheetList::indexOfPage(int pageNum, int from) const
 {
-    return indexOfPage(project->page(pageNum), from);
+    return indexOfPage(theProject->page(pageNum), from);
 }
 
 

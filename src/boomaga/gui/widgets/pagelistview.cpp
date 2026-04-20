@@ -70,16 +70,16 @@ PagesListView::PagesListView(QWidget *parent):
     mRender(new Render(RESOLUTIN)),
     mIconSize(64)
 {
-    connect(project, SIGNAL(tmpFileRenamed(QString)),
+    connect(theProject, SIGNAL(tmpFileRenamed(QString)),
             mRender, SLOT(setFileName(QString)));
 
     connect(mRender, SIGNAL(pageReady(QImage,int)),
             this, SLOT(previewRedy(QImage,int)));
 
-    connect(project, SIGNAL(changed()),
+    connect(theProject, SIGNAL(changed()),
             this, SLOT(updateItems()));
 
-    connect(project, SIGNAL(currentPageChanged(int)),
+    connect(theProject, SIGNAL(currentPageChanged(int)),
             this, SLOT(switchPageNum()));
 
     setIconSize(64);
@@ -126,7 +126,7 @@ void PagesListView::updateItems()
         QListWidgetItem *item = this->item(i);
         item->setText(page.title);
         item->setData(PAGE_NUM_ROLE, page.page);
-        item->setData(PREVIEWPAGE_NUM_ROLE, project->previewPageNum(page.page));
+        item->setData(PREVIEWPAGE_NUM_ROLE, theProject->previewPageNum(page.page));
         item->setData(TOOLTIP_TEMPLATE_ROLE, page.toolTip);
 
         if (page.page > -1)
@@ -141,7 +141,7 @@ void PagesListView::updateItems()
         QListWidgetItem *item = new QListWidgetItem(this);
         item->setText(page.title);
         item->setData(PAGE_NUM_ROLE, page.page);
-        item->setData(PREVIEWPAGE_NUM_ROLE, project->previewPageNum(page.page));
+        item->setData(PREVIEWPAGE_NUM_ROLE, theProject->previewPageNum(page.page));
         item->setData(TOOLTIP_TEMPLATE_ROLE, page.toolTip);
 
         item->setIcon(createIcon(QImage()));
@@ -164,7 +164,7 @@ void PagesListView::switchPageNum()
     if (count() < 1)
         return;
 
-    int pageNum = project->currentPreviewPage();
+    int pageNum = theProject->currentPreviewPage();
 
     if (pageNum < 0)
     {
@@ -215,7 +215,7 @@ void PagesListView::previewRedy(QImage image, int pageNum)
             }
             else
             {
-                if (project->printer()->grayscale())
+                if (theProject->printer()->grayscale())
                     image = toGrayscale(image);
 
                 item(i)->setToolTip(QString(TOOLTIP_HTML)
@@ -245,7 +245,7 @@ void PagesListView::mouseReleaseEvent(QMouseEvent *e)
 
     emit pageSelected(page);
 
-    int sheet = project->previewSheets().indexOfPage(page);
+    int sheet = theProject->previewSheets().indexOfPage(page);
     if (sheet < 0)
         return;
 
@@ -260,7 +260,7 @@ void PagesListView::wheelEvent(QWheelEvent *e)
 {
     if (e->modifiers() & Qt::CTRL)
     {
-        if (e->delta() > 0)
+        if (e->angleDelta().y() > 0)
             setIconSize(iconSize() + 8);
         else
             setIconSize(iconSize() - 8);
@@ -336,7 +336,7 @@ QIcon PagesListView::createIcon(const QImage &image) const
     QImage img;
     if (image.isNull())
     {
-        QSizeF size = project->printer()->paperSize(UnitPoint);
+        QSizeF size = theProject->printer()->paperSize(UnitPoint);
         size.scale(MAX_ICON_SIZE, MAX_ICON_SIZE, Qt::KeepAspectRatio);
 
         img = QImage(size.toSize(), QImage::Format_ARGB32);
@@ -345,7 +345,7 @@ QIcon PagesListView::createIcon(const QImage &image) const
     else
     {
         img = image.scaled(MAX_ICON_SIZE, MAX_ICON_SIZE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        if (project->printer()->grayscale())
+        if (theProject->printer()->grayscale())
             img = toGrayscale(img);
     }
 

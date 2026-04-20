@@ -33,6 +33,7 @@
 #include "pdfxref.h"
 
 class QFile;
+class QTextCodec;
 
 namespace PDF {
 

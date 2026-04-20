@@ -130,9 +130,9 @@ QImage RenderWorker::renderPage(int sheetNum, const QRectF &pageRect, int pageNu
     mBusy = true;
     QImage img = doRenderSheet(mPopplerDoc, sheetNum, mResolution);
 
-    QSizeF printerSize =  project->printer()->paperRect().size();
+    QSizeF printerSize =  theProject->printer()->paperRect().size();
 
-    if (isLandscape(project->rotation()))
+    if (isLandscape(theProject->rotation()))
         printerSize.transpose();
 
     double scale = qMin(img.width() * 1.0 / printerSize.width(),
@@ -141,11 +141,11 @@ QImage RenderWorker::renderPage(int sheetNum, const QRectF &pageRect, int pageNu
     QSize size = QSize(pageRect.width()  * scale,
                        pageRect.height() * scale);
 
-    if (isLandscape(project->rotation()))
+    if (isLandscape(theProject->rotation()))
         size.transpose();
 
     QRect rect(QPoint(0, 0), size);
-    if (isLandscape(project->rotation()))
+    if (isLandscape(theProject->rotation()))
     {
         rect.moveRight(img.width() - pageRect.top()  * scale);
         rect.moveTop(pageRect.left() * scale);
@@ -323,12 +323,12 @@ void Render::startRenderSheet(RenderWorker *worker, int sheetNum)
  ************************************************/
 void Render::startRenderPage(RenderWorker *worker, int pageNum)
 {
-    int sheetNum = project->previewSheets().indexOfPage(pageNum);
+    int sheetNum = theProject->previewSheets().indexOfPage(pageNum);
     if (sheetNum < 0)
         return;
 
-    Sheet *sheet = project->previewSheets().at(sheetNum);
-    ProjectPage *page = project->page(pageNum);
+    Sheet *sheet = theProject->previewSheets().at(sheetNum);
+    ProjectPage *page = theProject->page(pageNum);
 
     int pageOnSheet = -1;
     for (int i = 0; i<sheet->count(); ++i)
@@ -340,7 +340,7 @@ void Render::startRenderPage(RenderWorker *worker, int pageNum)
     if (pageOnSheet < 0)
         return;
 
-    TransformSpec spec = project->layout()->transformSpec(sheet, pageOnSheet, project->rotation());
+    TransformSpec spec = theProject->layout()->transformSpec(sheet, pageOnSheet, theProject->rotation());
 
     QMetaObject::invokeMethod(worker,
                               "renderPage",

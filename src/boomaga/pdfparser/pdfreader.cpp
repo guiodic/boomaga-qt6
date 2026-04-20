@@ -32,7 +32,7 @@
 #include "pdferrors.h"
 #include "pdfvalue.h"
 #include <QFile>
-#include <QTextCodec>
+#include <QtCore5Compat/QTextCodec>
 #include <QDebug>
 
 

@@ -240,6 +240,6 @@ private:
 };
 
 
-#define project Project::instance()
+#define theProject Project::instance()
 
 #endif // PROJECT_H

@@ -27,7 +27,7 @@
 #include <QDebug>
 #include <QtCore/QSettings>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#include <QtCore5Compat/QTextCodec>
 
 /************************************************
  *
@@ -349,7 +349,7 @@ static QString getValue(const QSettings &src, const QString &key)
 TranslatorsInfo::TranslatorsInfo()
 {
     QSettings src(":/translatorsInfo", QSettings::IniFormat);
-    src.setIniCodec("UTF-8");
+    
 
     foreach(QString group, src.childGroups())
     {

@@ -165,7 +165,7 @@ QString Settings::keyToString(Settings::Key key) const
  ************************************************/
 void Settings::init()
 {
-    setIniCodec("UTF-8");
+    
     setDefaultValue(Layout,   "1up");
     setDefaultValue(DoubleSided, true);
     setDefaultValue(ExportPDF_FileName, tr("~/Untitled.pdf"));

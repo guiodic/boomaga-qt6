@@ -286,7 +286,7 @@ void TmpPdfFile::updateSheets(const QList<Sheet *> &sheets)
         QFile file(mFileName);
         if (!file.open(QFile::ReadWrite))
         {
-            project->error(tr("I can't create temporary file \"%1\"")
+            theProject->error(tr("I can't create temporary file \"%1\"")
                            .arg(mFileName));
             return;
         }
@@ -307,7 +307,7 @@ bool TmpPdfFile::writeDocument(const QList<Sheet*> &sheets, QIODevice *out)
 {
     QFile f(mFileName);
     if (!f.open(QFile::ReadOnly))
-        return project->error(tr("I can't read file '%1'").arg(mFileName) + "\n" + out->errorString());
+        return theProject->error(tr("I can't read file '%1'").arg(mFileName) + "\n" + out->errorString());
 
 
     qint64 bufLen = qMin(mOrigFileSize - f.pos(), (qint64)(1024 * 1024));
@@ -315,7 +315,7 @@ bool TmpPdfFile::writeDocument(const QList<Sheet*> &sheets, QIODevice *out)
     {
         int wrote = out->write(f.read(bufLen));
         if (wrote<0)
-            return project->error(tr("I can't write to file '%1'").arg(mFileName) + "\n" + out->errorString());
+            return theProject->error(tr("I can't write to file '%1'").arg(mFileName) + "\n" + out->errorString());
 
         bufLen = qMin(mOrigFileSize - f.pos(), (qint64)(1024 * 1024));
     }
@@ -418,7 +418,7 @@ void TmpPdfFile::writeSheets(QIODevice *out, const QList<Sheet *> &sheets) const
 
 
     // Pages object .............................
-    QRectF mediaBox = project->printer()->paperRect();
+    QRectF mediaBox = theProject->printer()->paperRect();
 
     xref.insert(pagesNum, out->pos());
     *out << pagesNum << " 0 obj\n";
@@ -440,12 +440,12 @@ void TmpPdfFile::writeSheets(QIODevice *out, const QList<Sheet *> &sheets) const
     xref.insert(metaDataNum, out->pos());
     *out << metaDataNum << " 0 obj\n";
     *out << "<<\n";
-    out->write(project->metaData().asPDFDict());
+    out->write(theProject->metaData().asPDFDict());
     *out << ">>\n";
     *out << "endobj\n";
 
     /*
-    QByteArray metaData = project->metaData().asXMP();
+    QByteArray metaData = theProject->metaData().asXMP();
     xref.insert(metaDataNum, out->pos());
     *out << metaDataNum << " 0 obj\n";
     *out << "<<\n";
@@ -503,7 +503,7 @@ void TmpPdfFile::writeSheets(QIODevice *out, const QList<Sheet *> &sheets) const
  ************************************************/
 void TmpPdfFile::getPageStream(QString *out, const Sheet *sheet) const
 {
-    Printer * printer = project->printer();
+    Printer * printer = theProject->printer();
 
     for(int i=0; i<sheet->count(); ++i)
     {
@@ -512,7 +512,7 @@ void TmpPdfFile::getPageStream(QString *out, const Sheet *sheet) const
         if (page)
         {
 
-            TransformSpec spec = project->layout()->transformSpec(sheet, i, project->rotation());
+            TransformSpec spec = theProject->layout()->transformSpec(sheet, i, theProject->rotation());
             QRectF paperRect = printer->paperRect();
 
             double dx = 0;

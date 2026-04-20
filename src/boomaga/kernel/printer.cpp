@@ -101,25 +101,6 @@ PrinterProfile::PrinterProfile():
 /************************************************
  *
  ************************************************/
-PrinterProfile &PrinterProfile::operator=(const PrinterProfile &other)
-{
-    mName           = other.mName;
-    mLeftMargin     = other.mLeftMargin;
-    mRightMargin    = other.mRightMargin;
-    mTopMargin      = other.mTopMargin;
-    mBottomMargin   = other.mBottomMargin;
-    mInternalMargin = other.mInternalMargin;
-    mDuplexType     = other.mDuplexType;
-    mDrawBorder     = other.mDrawBorder;
-    mReverseOrder   = other.mReverseOrder;
-    mPaperSize      = other.mPaperSize;
-    mColorMode      = other.mColorMode;
-    mFlipType       = other.mFlipType;
-
-    return *this;
-}
-
-
 /************************************************
  *
  ************************************************/
@@ -538,7 +519,7 @@ bool Printer::print(const QList<Sheet *> &sheets, const QString &jobName, bool d
                           .arg(QDir::homePath())
                           .arg(QCoreApplication::applicationPid());
 
-    project->writeDocument(sheets, file);
+    theProject->writeDocument(sheets, file);
 
     QStringList args;
     args << "-P" << name();                       // Prints files to the named printer.
@@ -549,7 +530,7 @@ bool Printer::print(const QList<Sheet *> &sheets, const QString &jobName, bool d
     // Duplex options ...........................
     if (duplexType() == DuplexAuto && doubleSided)
     {
-        if (project->layout()->flipType(flipType()) == FlipType::LongEdge)
+        if (theProject->layout()->flipType(flipType()) == FlipType::LongEdge)
             args << "-o sides=two-sided-long-edge";
         else
             args << "-o sides=two-sided-short-edge";
@@ -606,7 +587,7 @@ bool Printer::print(const QList<Sheet *> &sheets, const QString &jobName, bool d
         f.close();
     }
 
-    project->writeDocument(sheets, fileName);
+    theProject->writeDocument(sheets, fileName);
     QProcess::startDetached("okular", QStringList() << fileName);
     return true;
 #endif
