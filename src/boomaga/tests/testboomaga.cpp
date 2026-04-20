@@ -1071,7 +1071,7 @@ void TestBoomaga::test_BooklesSplit()
     QString pageSpec = tags.count() > 2 ? tags.at(2): "";
 
     QList<ProjectPage*> pages;
-    foreach (QString spec, pageSpec.split(" ", Qt::SkipEmptyParts))
+    for (const QString &spec : pageSpec.split(' ', Qt::SkipEmptyParts))
     {
         ProjectPage *page = new ProjectPage();
         page->setManualStartSubBooklet(spec.contains("M"));

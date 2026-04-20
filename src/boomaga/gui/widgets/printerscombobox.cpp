@@ -259,7 +259,8 @@ int PrintersComboBox::addPrinter(Printer *printer)
  ************************************************/
 int PrintersComboBox::addProfile(Printer *printer, int profileIndex)
 {
-    const PrinterProfile profile = printer->profiles().at(profileIndex);
+    const auto profiles = printer->profiles();
+    const PrinterProfile &profile = profiles.at(profileIndex);
 
     QStandardItem *item = new QStandardItem(printer->name() + " (" + profile.name() + ") ");
     item->setData(profile.name(), PRINTER_ITEM_TEXT_ROLE);

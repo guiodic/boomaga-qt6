@@ -28,12 +28,12 @@
 #define PDFREADER_H
 
 #include <QtGlobal>
-#include <QtCore5Compat/QTextCodec>
 #include <exception>
 #include "pdfvalue.h"
 #include "pdfxref.h"
 
 class QFile;
+class QTextCodec;
 
 namespace PDF {
 
