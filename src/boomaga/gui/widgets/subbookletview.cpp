@@ -43,20 +43,20 @@ SubBookletView::SubBookletView(QWidget *parent) :
 QList<PagesListView::ItemInfo> SubBookletView::getPages() const
 {
     QList<ItemInfo> res;
-    if (!project->previewSheetCount())
+    if (!theProject->previewSheetCount())
         return res;
 
     QList<int> pages;
     pages << 0;
-    for (int i=1; i<project->pageCount(); ++i)
+    for (int i=1; i<theProject->pageCount(); ++i)
     {
-        if (project->page(i)->isStartSubBooklet())
+        if (theProject->page(i)->isStartSubBooklet())
             pages << i;
     }
 
     for (int i=0; i<pages.count(); ++i)
     {
-        int endPage = i+1<pages.count() ? pages.at(i+1) : project->pageCount();
+        int endPage = i+1<pages.count() ? pages.at(i+1) : theProject->pageCount();
         ItemInfo page;
         page.page = pages.at(i);
         page.title = tr("Sub-booklet %1").arg(i+1) + "\n      " + tr("%1 pages").arg(endPage - page.page);

@@ -174,7 +174,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
-find_package(Qt5 REQUIRED
+find_package(Qt6 REQUIRED
+    Core5Compat
     Core
     Widgets
     PrintSupport
@@ -215,13 +216,13 @@ endif()
 
 include(translations/translatorsinfo/CMakeLists.txt)
 get_translatorsinfo_qrc(translatorsinfo_qrc)
-qt5_add_resources(TRANSLATORS_INFO_QRC ${translatorsinfo_qrc})
+qt6_add_resources(TRANSLATORS_INFO_QRC ${translatorsinfo_qrc})
 
-qt5_add_resources(  QRC_SOURCES ${RESOURCES})
-qt5_add_translation(QM_FILES    ${TS_FILES})
+qt6_add_resources(  QRC_SOURCES ${RESOURCES})
+qt6_add_translation(QM_FILES    ${TS_FILES})
 
 add_executable(boomaga ${HEADERS} ${SOURCES} ${QM_FILES} ${QRC_SOURCES} ${TRANSLATORS_INFO_QRC})
-target_link_libraries(boomaga ${LIBRARIES} Qt5::Widgets Qt5::PrintSupport Qt5::DBus)
+target_link_libraries(boomaga ${LIBRARIES} Qt6::Widgets Qt6::PrintSupport Qt6::DBus Qt6::Core5Compat)
 set_target_properties(boomaga PROPERTIES OUTPUT_NAME "boomaga")
 
 

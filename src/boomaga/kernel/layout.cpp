@@ -92,7 +92,7 @@ int LayoutNUp::calcSheetCount() const
 {
     int pps = mPageCountVert * mPageCountHoriz;
 
-    return ceil(project->pageCount() * 1.0 / pps);
+    return ceil(theProject->pageCount() * 1.0 / pps);
 }
 
 
@@ -123,21 +123,21 @@ void LayoutNUp::doFillSheets(QList<Sheet *> *sheets, bool) const
     int pps = mPageCountVert * mPageCountHoriz;
 
     int i=0;
-    while (i < project->pageCount())
+    while (i < theProject->pageCount())
     {
         Sheet *sheet = new Sheet(pps, sheets->count());
 
         for (int j=0; j<pps; ++j)
         {
-            if (i<project->pageCount())
+            if (i<theProject->pageCount())
             {
-                ProjectPage *page = project->page(i);
+                ProjectPage *page = theProject->page(i);
                 sheet->setPage(j, page);
             }
             ++i;
         }
 
-        sheet->setRotation(project->rotation());
+        sheet->setRotation(theProject->rotation());
         sheets->append(sheet);
     }
 }
@@ -149,7 +149,7 @@ void LayoutNUp::doFillSheets(QList<Sheet *> *sheets, bool) const
  ************************************************/
 TransformSpec LayoutNUp::transformSpec(const Sheet *sheet, int pageNumOnSheet, Rotation sheetRotation) const
 {
-    Printer *printer = project->printer();
+    Printer *printer = theProject->printer();
     const QRectF printerRect = printer->pageRect();
     const qreal margin = printer->internalMarhin();
 
@@ -431,7 +431,7 @@ LayoutBooklet::LayoutBooklet():
 int LayoutBooklet::calcSheetCount() const
 {
     int result = 0;
-    QList<BookletInfo> booklets = split(project->pages());
+    QList<BookletInfo> booklets = split(theProject->pages());
 
     foreach (BookletInfo booklet, booklets)
     {
@@ -446,7 +446,7 @@ int LayoutBooklet::calcSheetCount() const
  ************************************************/
 void LayoutBooklet::fillSheets(QList<Sheet *> *sheets) const
 {
-    QList<BookletInfo> booklets = split(project->pages());
+    QList<BookletInfo> booklets = split(theProject->pages());
     foreach (BookletInfo booklet, booklets)
     {
         fillSheetsForBook(booklet.start,
@@ -488,7 +488,7 @@ void LayoutBooklet::fillSheetsForBook(int bookStart, int bookLength, QList<Sheet
         int n = (cnt - 1) - i;
         if (n < bookLength)
         {
-            ProjectPage *page = project->page(n + bookStart);
+            ProjectPage *page = theProject->page(n + bookStart);
             sheet->setPage(0, page);
         }
 
@@ -496,7 +496,7 @@ void LayoutBooklet::fillSheetsForBook(int bookStart, int bookLength, QList<Sheet
         n = i;
         if (n < bookLength)
         {
-            ProjectPage *page = project->page(n + bookStart);
+            ProjectPage *page = theProject->page(n + bookStart);
             sheet->setPage(1, page);
         }
 
@@ -504,20 +504,20 @@ void LayoutBooklet::fillSheetsForBook(int bookStart, int bookLength, QList<Sheet
         // Sheet 1 **************************
         sheet = new Sheet(2, sheets->count());
         sheet->setHints(Sheet::HintDrawFold);
-        sheet->setRotation(project->rotation());
+        sheet->setRotation(theProject->rotation());
         sheets->append(sheet);
 
         n = i + 1;
         if (n < bookLength)
         {
-            ProjectPage *page = project->page(n + bookStart);
+            ProjectPage *page = theProject->page(n + bookStart);
             sheet->setPage(0, page);
         }
 
         n = (cnt - 1) - (i + 1);
         if (n < bookLength)
         {
-            ProjectPage *page = project->page(n + bookStart);
+            ProjectPage *page = theProject->page(n + bookStart);
             sheet->setPage(1, page);
         }
     }
@@ -529,7 +529,7 @@ void LayoutBooklet::fillSheetsForBook(int bookStart, int bookLength, QList<Sheet
  ************************************************/
 void LayoutBooklet::fillPreviewSheets(QList<Sheet *> *sheets, Direction direction) const
 {
-    QList<BookletInfo> booklets = split(project->pages());
+    QList<BookletInfo> booklets = split(theProject->pages());
     foreach (BookletInfo booklet, booklets)
     {
         fillPreviewSheetsForBook(booklet.start,
@@ -636,7 +636,7 @@ void LayoutBooklet::fillPreviewSheetsForBook(int bookStart, int bookLength, QLis
         {
             if (i < bookLength)
             {
-                ProjectPage *page = project->page(i + bookStart);
+                ProjectPage *page = theProject->page(i + bookStart);
                 sheet->setPage(0, page);
             }
         }
@@ -645,7 +645,7 @@ void LayoutBooklet::fillPreviewSheetsForBook(int bookStart, int bookLength, QLis
         {
             if (i +1 < bookLength)
             {
-                ProjectPage *page = project->page(i + 1 + bookStart);
+                ProjectPage *page = theProject->page(i + 1 + bookStart);
                 sheet->setPage(1, page);
             }
         }

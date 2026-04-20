@@ -63,7 +63,7 @@ void TestBoomaga::testInFiles()
     QString inFile = expectedFile.left(expectedFile.length() - 9);
 
     QSettings expect(expectedFile, QSettings::IniFormat);
-    expect.setIniCodec("UTF-8");
+    
 
     try
     {
@@ -124,7 +124,7 @@ void TestBoomaga::testInFiles()
 
         for (int j=0; j<res->jobs().count(); ++j)
         {
-            const Job &job = res->jobs().at(j);
+            const Job job = res->jobs().at(j);
             expect.beginGroup(QString("job %1").arg(j));
 
             if (expect.contains("pageCount"))

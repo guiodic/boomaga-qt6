@@ -250,6 +250,6 @@ int main(int argc, char *argv[])
         files << QString::fromStdString(f);
     }
 
-    project->load(files);
+    theProject->load(files);
     return application.exec();
 }

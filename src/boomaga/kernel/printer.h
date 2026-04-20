@@ -42,7 +42,8 @@ class PrinterProfile
 {
 public:
     explicit PrinterProfile();
-    PrinterProfile &operator=(const PrinterProfile &other);
+    PrinterProfile(const PrinterProfile& other) = default;
+    PrinterProfile &operator=(const PrinterProfile &other) = default;
 
     QString name() const { return mName; }
     void setName(const QString &name);

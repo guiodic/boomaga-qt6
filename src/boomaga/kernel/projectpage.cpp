@@ -76,7 +76,7 @@ QRectF ProjectPage::rect() const
     if (mPdfInfo.cropBox.isValid())
         return mPdfInfo.cropBox;
     else
-        return project->printer()->paperRect();
+        return theProject->printer()->paperRect();
 }
 
 

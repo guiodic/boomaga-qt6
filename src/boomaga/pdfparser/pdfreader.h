@@ -1,3 +1,4 @@
+#include <QtCore5Compat/QTextCodec>
 /* BEGIN_COMMON_COPYRIGHT_HEADER
  * (c)LGPL2+
  *
