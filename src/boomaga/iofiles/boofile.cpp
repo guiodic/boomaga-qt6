@@ -229,7 +229,7 @@ void BooFile::read()
                     // remove wrong pages .................
                     {
                         int cnt = pdfJob.pageCount();
-                        for (int i=pagesSpec.count()-1; i>=0; --i)
+                        for (int i=pagesSpec.size()-1; i>=0; --i)
                         {
                             if (pagesSpec.at(i).pageNum >= cnt)
                                 pagesSpec.removeAt(i);
@@ -237,13 +237,13 @@ void BooFile::read()
                     }
 
                     QVector<int> pageNums;
-                    pageNums.reserve(pagesSpec.count());
+                    pageNums.reserve(pagesSpec.size());
                     foreach(const PageSpec &spec, pagesSpec)
                         pageNums << spec.pageNum;
 
                     addPages(pdfJob, pageNums, &job);
 
-                    for(int i=0; i<pagesSpec.count(); ++i)
+                    for(int i=0; i<pagesSpec.size(); ++i)
                     {
                         const PageSpec &spec = pagesSpec.at(i);
                         ProjectPage *page = job.page(i);
@@ -324,8 +324,8 @@ void BooFile::save(const QString &fileName)
 
     // If we write the same file, the program may rewrite data before
     // it will readed, so we store the data in the memory.
-    QVector<QByteArray> documents(mJobs.count());
-    for (int i=0; i<mJobs.count(); ++i)
+    QVector<QByteArray> documents(mJobs.size());
+    for (int i=0; i<mJobs.size(); ++i)
     {
         const Job &job = mJobs.at(i);
         if (job.fileName() == filePath)
@@ -358,7 +358,7 @@ void BooFile::save(const QString &fileName)
         writeCommand(&file, "META_KEYWORDS", mMetaData.keywords());
 
 
-    for (int i=0; i<mJobs.count(); ++i)
+    for (int i=0; i<mJobs.size(); ++i)
     {
         const Job &job = mJobs.at(i);
 
@@ -381,7 +381,7 @@ void BooFile::save(const QString &fileName)
 
         write(&file, "@PJL ENTER LANGUAGE=PDF\n");
 
-        if (documents.at(i).count())
+        if (documents.at(i).size())
         {
             const QByteArray &data = documents.at(i);
             write(&file, data);

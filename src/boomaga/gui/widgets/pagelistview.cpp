@@ -234,7 +234,7 @@ void PagesListView::previewRedy(QImage image, int pageNum)
  ************************************************/
 void PagesListView::mouseReleaseEvent(QMouseEvent *e)
 {
-    int n = indexAt(e->pos()).row();
+    int n = indexAt(e->position().toPoint()).row();
     if (n < 0)
         return;
 
@@ -286,14 +286,14 @@ void PagesListView::dropEvent(QDropEvent *e)
         return;
     }
 
-    int to = indexAt(e->pos()).row();
+    int to = indexAt(e->position().toPoint()).row();
     if (dropIndicatorPosition() == QAbstractItemView::BelowItem)
     {
         to++;
     }
     else if (dropIndicatorPosition() == QAbstractItemView::OnViewport)
     {
-        if (e->pos().y() > visualItemRect(item(count()-1)).bottom())
+        if (e->position().toPoint().y() > visualItemRect(item(count()-1)).bottom())
             to = count();
     }
 

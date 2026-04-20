@@ -1035,9 +1035,7 @@ void MetaData::addDictItem(QByteArray &out, const QString &key, const QString &v
  * ***********************************************/
 void MetaData::addDictItem(QByteArray &out, const QString &key, const QDateTime &value) const
 {
-    QDateTime utc = value.toUTC();
-    utc.setTimeSpec(Qt::LocalTime);
-    int offset = utc.secsTo(value) / 60;
+    int offset = value.offsetFromUtc() / 60;
 
     out.append(QString("/").toLatin1() + key.toLatin1() + QString(" (").toLatin1());
     out.append(value.toString("yyyyMMddhhmmss").toLatin1());

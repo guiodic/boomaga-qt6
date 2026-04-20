@@ -25,7 +25,7 @@
 
 
 #include "pdfxref.h"
-#include <ctgmath>
+#include <cmath>
 #include <QDebug>
 
 using namespace PDF;

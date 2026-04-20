@@ -37,6 +37,8 @@
 #endif
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void findGrayScaleOption(ppd_file_t *ppd, QString *grayScaleOption, QString *colorOption)
 {
     QStringList cases;
@@ -59,6 +61,7 @@ void findGrayScaleOption(ppd_file_t *ppd, QString *grayScaleOption, QString *col
         }
     }
 }
+#pragma GCC diagnostic pop
 
 
 CupsPrinterOptions::CupsPrinterOptions(const QString &printerName):
@@ -95,6 +98,8 @@ CupsPrinterOptions::CupsPrinterOptions(const QString &printerName):
     mDuplex = mDuplex || QString(cupsGetOption("EFDuplex", dest->num_options, dest->options)).toUpper().startsWith("DUPLEX-");
     mDuplex = mDuplex || QString(cupsGetOption("KD03Duplex", dest->num_options, dest->options)).toUpper().startsWith("DUPLEX-");
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     // Read values from PPD
     // The returned filename is stored in a static buffer
     const char * ppdFile = cupsGetPPD(printerName.toLocal8Bit().data());
@@ -132,6 +137,7 @@ CupsPrinterOptions::CupsPrinterOptions(const QString &printerName):
         }
         QFile::remove(ppdFile);
     }
+#pragma GCC diagnostic pop
 
 
     bool ok;
