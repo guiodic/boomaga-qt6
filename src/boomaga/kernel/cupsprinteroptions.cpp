@@ -1,3 +1,5 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 /* BEGIN_COMMON_COPYRIGHT_HEADER
  * (c)LGPL2+
  *
@@ -159,3 +161,4 @@ CupsPrinterOptions::CupsPrinterOptions(const QString &printerName):
 
 
 
+#pragma GCC diagnostic pop

@@ -223,12 +223,12 @@ int main(int argc, char *argv[])
 
 
     QTranslator qtTranslator;
-    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    (void)qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
     application.installTranslator(&qtTranslator);
 
 
     QTranslator translator;
-    translator.load(QString("%1/boomaga_%2.qm").arg(TRANSLATIONS_DIR, QLocale::system().name()));
+    (void)translator.load(QString("%1/boomaga_%2.qm").arg(TRANSLATIONS_DIR, QLocale::system().name()));
     application.installTranslator(&translator);
 
 
