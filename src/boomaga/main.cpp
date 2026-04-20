@@ -157,7 +157,7 @@ void readEnvFile()
     QFile envFile(cacheDir + "/boomaga.env");
     if (envFile.exists())
     {
-        envFile.open(QFile::ReadOnly);
+        (void)envFile.open(QFile::ReadOnly);
         while (!envFile.atEnd())
         {
             QString line = QString::fromLocal8Bit(envFile.readLine());
