@@ -157,7 +157,8 @@ void readEnvFile()
     QFile envFile(cacheDir + "/boomaga.env");
     if (envFile.exists())
     {
-        (void)envFile.open(QFile::ReadOnly);
+        if (!envFile.open(QFile::ReadOnly))
+            return;
         while (!envFile.atEnd())
         {
             QString line = QString::fromLocal8Bit(envFile.readLine());
@@ -223,13 +224,17 @@ int main(int argc, char *argv[])
 
 
     QTranslator qtTranslator;
-    (void)qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
-    application.installTranslator(&qtTranslator);
+    if (qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        application.installTranslator(&qtTranslator);
+    else
+        qWarning("Failed to load Qt translations.");
 
 
     QTranslator translator;
-    (void)translator.load(QString("%1/boomaga_%2.qm").arg(TRANSLATIONS_DIR, QLocale::system().name()));
-    application.installTranslator(&translator);
+    if (translator.load(QString("%1/boomaga_%2.qm").arg(TRANSLATIONS_DIR, QLocale::system().name())))
+        application.installTranslator(&translator);
+    else
+        qWarning("Failed to load boomaga translations.");
 
 
     BoomagaDbus dbus("org.boomaga", "/boomaga");
